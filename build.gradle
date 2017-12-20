@@ -1,0 +1,74 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.9.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+    maven { url "http://jcenter.bintray.com" }
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+	dependencies {
+    classpath("com.github.ben-manes:gradle-versions-plugin:0.17.0")
+    classpath("org.jfrog.buildinfo:build-info-extractor-gradle:latest.release")
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+  }
+}
+
+defaultTasks 'clean', 'build'
+
+version = "${version}"
+group = "${group}"
+
+apply plugin: 'base'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+
+dependencies {
+  compile("com.netflix.hollow:hollow:${hollowVersion}")
+  compile("com.netflix.hollow:hollow-diff-ui:${hollowVersion}")
+  compile("com.netflix.hollow:hollow-explorer-ui:${hollowVersion}")
+  compile("io.prometheus:simpleclient:${prometheusSimpleClientVersion}")
+  compile("io.prometheus:simpleclient_common:${prometheusSimpleClientVersion}")
+  compile("io.prometheus:simpleclient_hotspot:${prometheusSimpleClientVersion}")
+  compile("io.prometheus:simpleclient_servlet:${prometheusSimpleClientVersion}")
+  compile("io.prometheus:simpleclient_spring_boot:${prometheusSimpleClientVersion}")
+	compile("org.codehaus.groovy:groovy")
+//  compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
+	compile("org.springframework.boot:spring-boot-starter-security")
+	compile("org.springframework.boot:spring-boot-starter-web")
+
+  testRuntime("cglib:cglib-nodep:${cglibVersion}")
+
+  testCompile("org.spockframework:spock-core:1.1-groovy-2.4")
+  testCompile("org.springframework.boot:spring-boot-starter-test")
+  testCompile("org.springframework.security:spring-security-test")
+}
+
+task copyJar(type: Copy) {
+  dependsOn build
+  from "build/libs/${project.name}-${project.version}.jar"
+  into 'docker'
+  rename { String fileName ->
+    fileName.replace("-${project.version}", "").replace("${project.name}", "app")
+  }
+}
+
+// Generates hollow Consumer API in src/main/groovy/com/tgt/neptune/isl/domain/generated.
+task generateHollowConsumerApi(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'com.os.accounts.hollow.AccountHollowAPIGenerator'
+  args("com.os.accounts.domain.Account", "com.os.accounts.domain.generated")
+}
+
+// This forces the source code generation to happen every time we build.
+build.finalizedBy(copyJar, generateHollowConsumerApi)

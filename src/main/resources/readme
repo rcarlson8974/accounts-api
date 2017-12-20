@@ -1,0 +1,3 @@
+This file is used by the neptune-lib-hollow APIGenerator to find the root project folder.
+Removing this file will break the build unless the APIGenerator.findRootProjectFolder
+method is changed.

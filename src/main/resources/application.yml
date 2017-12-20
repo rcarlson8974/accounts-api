@@ -1,0 +1,34 @@
+server:
+  context-path: /
+  compression:
+    enabled: true
+    min-response-size: 64
+    mime-types: application/javascript,application/json,image/svg+xml,text/css,text/html
+info:
+  app:
+    name: OS Accounts
+    description: This is the OS Accounts
+    version: $version
+    date: $date
+logging:
+    level:
+        root: 'WARN'
+        org.springframework: 'WARN'
+        org.hibernate: 'OFF'
+        com.tgt: 'DEBUG'
+spring:
+  main:
+    banner-mode: 'OFF'
+  application:
+    name: os-accounts
+management:
+    info:
+        git:
+          enabled: true
+          mode: simple
+
+hollow:
+  bucket: 'hollow-test'
+  domain: 'accounts'
+  namespace: 'v1'
+  applicationName: 'accounts-1.0'
