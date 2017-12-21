@@ -65,10 +65,10 @@ class AccountHollowConfig {
     return new HollowFilesystemBlobRetriever(publishDir, null)
   }
 
-//  @Bean
-//  AccountConsumer getConsumer() {
-//    return new AccountConsumer()
-//  }
+  @Bean
+  AccountConsumer getConsumer() {
+    return new AccountConsumer()
+  }
 
   @Bean
   HollowConsumer.AnnouncementWatcher getAnnouncementWatcher() {

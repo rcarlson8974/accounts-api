@@ -11,14 +11,13 @@ class AccountHollowHealthCheck implements HealthIndicator {
   @Autowired
   AccountProducer hollowProducer
 
-//  @Autowired
-//  AccountConsumer hollowConsumer
+  @Autowired
+  AccountConsumer hollowConsumer
 
   @Override
   Health health() {
     hollowProducer.init()
-//    return hollowConsumer.indexReady ? Health.up().build() : Health.down().build()
-    return hollowProducer.isReady() ? Health.up().build() : Health.down().build()
+    return hollowProducer.isReady() && hollowConsumer.isReady() ? Health.up().build() : Health.down().build()
   }
 
 }

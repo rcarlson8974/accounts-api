@@ -109,7 +109,7 @@ class AccountProducer extends HollowHealthCheck {
   private getAnnouncementWatcher() {
     AnnouncementWatcher announcementWatcher
     if (System.getProperty("spring.profiles.active") == 'local') {
-      File publishDir = new File(LocalHollowConfig.SCRATCH_DIR, "publish-dir")
+      File publishDir = new File(AccountHollowConfig.SCRATCH_DIR, "publish-dir")
       publishDir.mkdir()
       announcementWatcher = new HollowFilesystemAnnouncementWatcher(publishDir)
     } else {
