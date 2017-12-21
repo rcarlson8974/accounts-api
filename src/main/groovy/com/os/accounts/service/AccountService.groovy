@@ -1,7 +1,7 @@
 package com.os.accounts.service
 
 import com.os.accounts.domain.Account
-import com.os.accounts.hollow.AccountHollowConsumer
+import com.os.accounts.hollow.AccountProducer
 import com.os.accounts.transformer.AccountTransformer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -10,21 +10,31 @@ import org.springframework.stereotype.Service
 class AccountService {
 
 //  @Autowired
-//  AccountHollowConsumer hollowConsumer
+//  AccountConsumer consumer
 
-  List<Account> getAccounts() {
-//    if (hollowConsumer.indexReady) {
-//      List<com.os.accounts.domain.generated.Account> accounts = hollowConsumer.getAccounts()
+  @Autowired
+  AccountProducer producer
+
+//  List<Account> getAccounts() {
+//    if (consumer.indexReady) {
+//      List<com.os.accounts.domain.generated.Account> accounts = consumer.getAccounts()
 //      return accounts ? AccountTransformer.transformFromHollowToDomains(accounts) : null
 //    }
-    return null
-  }
+//    return null
+//  }
 //
-  Account getAccount(String accountId) {
-//    if (hollowConsumer.indexReady) {
-//      com.os.accounts.domain.generated.Account account = hollowConsumer.findMatch(accountId)
+//  Account getAccount(String accountId) {
+//    if (consumer.indexReady) {
+//      com.os.accounts.domain.generated.Account account = consumer.findMatch(accountId)
 //      return account ? AccountTransformer.transformFromHollowToDomain(account) : null
 //    }
-    return null
+//    return null
+//  }
+
+  Account createAccount(Account account) {
+    producer.publishAccount(account)
+    return account
   }
+
+
 }

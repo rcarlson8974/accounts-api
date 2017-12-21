@@ -11,5 +11,7 @@ import org.springframework.context.annotation.ComponentScan
 @SpringBootApplication
 @ComponentScan(['com.os.accounts.*',])
 class AccountApplication {
-  static void main(final String[] args) { SpringApplication.run(this, args) }
+  static void main(final String[] args) {
+    SpringApplication.run(this, args)
+  }
 }

@@ -32,3 +32,9 @@ hollow:
   domain: 'accounts'
   namespace: 'v1'
   applicationName: 'accounts-1.0'
+
+
+---
+spring:
+  profiles: local
+test: 'value'

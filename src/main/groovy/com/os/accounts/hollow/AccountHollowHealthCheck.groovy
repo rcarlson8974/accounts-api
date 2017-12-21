@@ -8,16 +8,17 @@ import org.springframework.stereotype.Component
 @Component
 class AccountHollowHealthCheck implements HealthIndicator {
 
+  @Autowired
+  AccountProducer hollowProducer
+
 //  @Autowired
-//  AccountHollowConsumer hollowConsumer
-//
-//  @Override
-//  Health health() {
-//    return hollowConsumer.indexReady ? Health.up().build() : Health.down().build()
-//  }
+//  AccountConsumer hollowConsumer
 
   @Override
   Health health() {
-    return null
+    hollowProducer.init()
+//    return hollowConsumer.indexReady ? Health.up().build() : Health.down().build()
+    return hollowProducer.isReady() ? Health.up().build() : Health.down().build()
   }
+
 }

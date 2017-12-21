@@ -1,17 +1,24 @@
 buildscript {
-	ext {
-		springBootVersion = '1.5.9.RELEASE'
-	}
-	repositories {
-		mavenCentral()
+  ext {
+    springBootVersion = '1.5.8.RELEASE'
+  }
+  repositories {
+    mavenCentral()
     maven { url "http://jcenter.bintray.com" }
     maven { url "https://plugins.gradle.org/m2/" }
   }
-	dependencies {
-    classpath("com.github.ben-manes:gradle-versions-plugin:0.17.0")
-    classpath("org.jfrog.buildinfo:build-info-extractor-gradle:latest.release")
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+  dependencies {
+    classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
+    classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.4.17'
+    classpath("net.saliman:gradle-cobertura-plugin:2.5.0")
+    classpath("nu.studer:gradle-credentials-plugin:${gradleCredentialsVersion}")
+    classpath("org.jfrog.buildinfo:build-info-extractor-gradle:${buildExtractorVersion}")
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
   }
+}
+
+plugins {
+  id 'com.adarshr.test-logger' version '1.1.2'
 }
 
 defaultTasks 'clean', 'build'
@@ -19,39 +26,108 @@ defaultTasks 'clean', 'build'
 version = "${version}"
 group = "${group}"
 
+//--------------------------------------------------------------------------
+// Use this task to see dependency updates available:
+//--------------------------------------------------------------------------
+// ./gradlew dependencyUpdates -Drevision=release
+//--------------------------------------------------------------------------
+
 apply plugin: 'base'
+apply plugin: 'com.gorylenko.gradle-git-properties'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'net.saliman.cobertura'
+apply plugin: 'nu.studer.credentials'
 apply plugin: 'org.springframework.boot'
-
-sourceCompatibility = 1.8
 
 repositories {
   mavenLocal()
   mavenCentral()
 }
 
+ext {
+  springCloudVersion = 'Dalston.SR4'
+}
+
 dependencies {
+  compile("com.google.guava:guava:20.0")
   compile("com.netflix.hollow:hollow:${hollowVersion}")
   compile("com.netflix.hollow:hollow-diff-ui:${hollowVersion}")
   compile("com.netflix.hollow:hollow-explorer-ui:${hollowVersion}")
+  compile("commons-beanutils:commons-beanutils:1.7.0")
   compile("io.prometheus:simpleclient:${prometheusSimpleClientVersion}")
   compile("io.prometheus:simpleclient_common:${prometheusSimpleClientVersion}")
   compile("io.prometheus:simpleclient_hotspot:${prometheusSimpleClientVersion}")
   compile("io.prometheus:simpleclient_servlet:${prometheusSimpleClientVersion}")
   compile("io.prometheus:simpleclient_spring_boot:${prometheusSimpleClientVersion}")
-	compile("org.codehaus.groovy:groovy")
-//  compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
-	compile("org.springframework.boot:spring-boot-starter-security")
-	compile("org.springframework.boot:spring-boot-starter-web")
+  compile("net.rakugakibox.springbootext:spring-boot-ext-logback-access:1.6")
+  compile("org.codehaus.gpars:gpars:1.2.1")
+  compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
+
+  compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
+//  compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
+  compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 
   testRuntime("cglib:cglib-nodep:${cglibVersion}")
 
-  testCompile("org.spockframework:spock-core:1.1-groovy-2.4")
-  testCompile("org.springframework.boot:spring-boot-starter-test")
-  testCompile("org.springframework.security:spring-security-test")
+  testCompile('org.awaitility:awaitility-groovy:3.0.0')
+  testCompile("org.spockframework:spock-core:${spockVersion}")
+  testCompile("org.spockframework:spock-spring:${spockVersion}")
+  testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+dependencyManagement {
+  imports {
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+  }
+}
+
+test {
+  // support passing -Dsystem.property=value to this task (such as -Dspring.profiles.active=ci)
+  systemProperties = System.properties
+  testLogging {
+    exceptionFormat 'full'
+  }
+  afterSuite { desc, result ->
+    if (!desc.parent) {
+      print "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+    }
+  }
+}
+
+bootRun {
+  // support passing -Dsystem.property=value to this task (such as -Dspring.profiles.active=stage)
+  systemProperties = System.properties
+}
+
+cobertura {
+  coverageReportDir = new File('cobertura/')
+  coverageFormats = ['html', 'xml']
+  coverageExcludes = ['.*AccountApplication.*', 'com.os.accounts.domain.generated.*']
+  coverageIgnoreTrivial = true
+  coverageCheckLineRate = 100
+  coverageCheckTotalLineRate = 100
+  coverageCheckHaltOnFailure = true
+}
+
+processResources {
+  filesMatching("**/application.yml") {
+    expand([
+        version: project.version,
+        date   : new Date(),
+    ])
+  }
+}
+
+idea {
+  module {
+    excludeDirs = []
+    ['.gradle', 'gradle/wrapper', 'logs', 'out', 'build'].each {
+      excludeDirs << file(it)
+    }
+  }
 }
 
 task copyJar(type: Copy) {
@@ -63,7 +139,12 @@ task copyJar(type: Copy) {
   }
 }
 
-// Generates hollow Consumer API in src/main/groovy/com/tgt/neptune/isl/domain/generated.
+configurations.all { exclude group: 'org.slf4j', module: 'slf4j-log4j12' }
+
+gitProperties {
+  gitPropertiesDir = new File("${project.rootDir}/src/main/resources")
+}
+
 task generateHollowConsumerApi(type: JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
   main = 'com.os.accounts.hollow.AccountHollowAPIGenerator'
