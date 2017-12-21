@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.RestController
 class AccountController {
 
   @Autowired
-  AccountService accountsService
+  AccountService accountService
 
   @RequestMapping(value = '/v1/accounts', method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   ResponseEntity<List<Account>> getAccounts() {
     try {
-      List<Account> accounts = accountsService.getAccounts()
+      List<Account> accounts = accountService.getAccounts()
       return new ResponseEntity(accounts ?: null, !accounts || accounts.empty ? HttpStatus.NOT_FOUND : HttpStatus.OK)
     } catch (e) {
       String errMsg = "error trying to get accounts -> ${e.message ?: e}"
@@ -35,9 +35,9 @@ class AccountController {
   }
 
   @RequestMapping(value = '/v1/accounts/{accountId}', method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  ResponseEntity<List<Account>> getAccountn(@PathVariable String accountId) {
+  ResponseEntity<List<Account>> getAccount(@PathVariable String accountId) {
     try {
-      Account account = accountsService.getAccount(accountId)
+      Account account = accountService.getAccount(accountId)
       return new ResponseEntity(account ?: null, !account ? HttpStatus.NOT_FOUND : HttpStatus.OK)
     } catch (e) {
       String errMsg = "error trying to get account ${accountId} -> ${e.message ?: e}"
@@ -47,9 +47,9 @@ class AccountController {
   }
 
   @RequestMapping(value = '/v1/accounts/create', method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  ResponseEntity<Account> getAccountn(@RequestBody Account account) {
+  ResponseEntity<Account> saveAccount(@RequestBody Account account) {
     try {
-      Account savedAccount = accountsService.createAccount(account)
+      Account savedAccount = accountService.createAccount(account)
       return new ResponseEntity(savedAccount, HttpStatus.OK)
     } catch (e) {
       String errMsg = "error trying to create account ${account} -> ${e.message ?: e}"
