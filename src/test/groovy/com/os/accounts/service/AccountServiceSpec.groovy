@@ -27,6 +27,28 @@ class AccountServiceSpec extends BaseSpecification {
     accounts == [account1]
   }
 
+    def 'gets accounts not found'() {
+      when:
+      List<Account> accounts = accountService.getAccounts()
+
+      then:
+      1 * consumer.isReady() >> true
+      1 * consumer.getAccounts() >> null
+      0 * AccountTransformer.transformFromHollowToDomains(_)
+      !accounts
+  }
+
+  def 'gets accounts consumer is not ready'() {
+    when:
+    List<Account> accounts = accountService.getAccounts()
+
+    then:
+    1 * consumer.isReady() >> false
+    0 * consumer.getAccounts()
+    0 * AccountTransformer.transformFromHollowToDomains(_)
+    !accounts
+  }
+
   def 'gets account'() {
     setup:
     GroovyMock(AccountTransformer, global: true)
@@ -42,6 +64,28 @@ class AccountServiceSpec extends BaseSpecification {
     account == account1
   }
 
+  def 'gets account not found'() {
+    when:
+    Account account = accountService.getAccount(accountId)
+
+    then:
+    1 * consumer.isReady() >> true
+    1 * consumer.findMatch(accountId) >> null
+    0 * AccountTransformer.transformFromHollowToDomain(_)
+    account == null
+  }
+
+  def 'gets account consumer is not ready'() {
+    when:
+    Account account = accountService.getAccount(accountId)
+
+    then:
+    1 * consumer.isReady() >> false
+    0 * consumer.findMatch(accountId)
+    0 * AccountTransformer.transformFromHollowToDomain(_)
+    !account
+  }
+
   def 'creates account'() {
     setup:
     GroovyMock(AccountTransformer, global: true)
@@ -54,25 +98,5 @@ class AccountServiceSpec extends BaseSpecification {
     1 * producer.publishAccount(account1)
     account == account1
   }
-
-//  def 'gets in aisle locations not found'() {
-//    when:
-//    List<AisleLocation> aisleLocations = aisleLocationService.getAisleLocations(storeId, aisleId1)
-//
-//    then:
-//    1 * hollowConsumer.getProperty('indexReady') >> true
-//    1 * hollowConsumer.findAisleLocationMatches(storeId, aisleId1) >> null
-//    !aisleLocations
-//  }
-//
-//  def 'gets in aisle locations consumer is not ready'() {
-//    when:
-//    List<AisleLocation> aisleLocations = aisleLocationService.getAisleLocations(storeId, aisleId1)
-//
-//    then:
-//    1 * hollowConsumer.getProperty('indexReady') >> false
-//    0 * hollowConsumer.findAisleLocationMatches(storeId, aisleId1)
-//    !aisleLocations
-//  }
 
 }
