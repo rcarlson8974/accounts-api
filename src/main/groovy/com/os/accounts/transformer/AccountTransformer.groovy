@@ -4,7 +4,7 @@ import com.os.accounts.domain.Account
 
 class AccountTransformer {
 
-  static List<Account> transformFromHollowToDomains(def accounts) {
+  static List<Account> transformFromHollowToDomains(List<com.os.accounts.domain.generated.Account> accounts) {
     List<Account> details = []
     accounts.each {
       details << transformFromHollowToDomain(it)

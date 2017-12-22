@@ -49,9 +49,9 @@ class AccountConsumer extends HollowHealthCheck {
     return idx.findMatch(accountId)
   }
 
-  def getAccounts() {
+  Collection<Account> getAccounts() {
     AccountAPI api = consumer.API as AccountAPI
-    return api.getAllAccount()
+    return api.getAllAccount() as List
   }
 
   @Override

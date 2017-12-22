@@ -18,8 +18,7 @@ class AccountService {
 
   List<Account> getAccounts() {
     if (consumer.isReady()) {
-//      List<com.os.accounts.domain.generated.Account> accounts = consumer.getAccounts()
-      def accounts = consumer.getAccounts()
+      List<com.os.accounts.domain.generated.Account> accounts = consumer.getAccounts()
       return accounts ? AccountTransformer.transformFromHollowToDomains(accounts) : null
     }
     return null
