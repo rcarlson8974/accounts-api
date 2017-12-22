@@ -56,4 +56,28 @@ class AccountControllerSpec extends BaseSpecification {
     response.body == "error trying to get accounts -> get accounts blew up"
   }
 
+  def 'saves new account'() {
+
+    when:
+    def response = accountController.saveAccount(account1)
+
+    then:
+    1 * accountService.createAccount(account1) >> account1
+    response.statusCode == HttpStatus.OK
+    response.body == account1
+  }
+
+  def 'saves new account handles exception'() {
+
+    when:
+    def response = accountController.saveAccount(account1)
+
+    then:
+    1 * accountService.createAccount(account1) >> {
+      throw new Exception("save account blew up")
+    }
+    response.statusCode == HttpStatus.INTERNAL_SERVER_ERROR
+    response.body == "error trying to create account ${account1} -> save account blew up"
+  }
+
 }
