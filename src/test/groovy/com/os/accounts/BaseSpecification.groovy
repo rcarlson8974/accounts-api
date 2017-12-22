@@ -11,6 +11,9 @@ class BaseSpecification extends Specification {
   }
 
   @Shared
+  String accountId = "100"
+
+  @Shared
   Account account1 = new Account(accountId: '1', accountDesc: 'accDesc1', userId: 'abc1', passwordHint: 'xxx###', pinIdHint: '1234', url: 'www.fake.com')
 
   @Shared

@@ -27,6 +27,34 @@ class AccountServiceSpec extends BaseSpecification {
     accounts == [account1]
   }
 
+  def 'gets account'() {
+    setup:
+    GroovyMock(AccountTransformer, global: true)
+    com.os.accounts.domain.generated.Account mockAccount = Mock(com.os.accounts.domain.generated.Account)
+
+    when:
+    Account account = accountService.getAccount(accountId)
+
+    then:
+    1 * consumer.isReady() >> true
+    1 * consumer.findMatch(accountId) >> mockAccount
+    1 * AccountTransformer.transformFromHollowToDomain(mockAccount) >> account1
+    account == account1
+  }
+
+  def 'creates account'() {
+    setup:
+    GroovyMock(AccountTransformer, global: true)
+    com.os.accounts.domain.generated.Account mockAccount = Mock(com.os.accounts.domain.generated.Account)
+
+    when:
+    Account account = accountService.createAccount(account1)
+
+    then:
+    1 * producer.publishAccount(account1)
+    account == account1
+  }
+
 //  def 'gets in aisle locations not found'() {
 //    when:
 //    List<AisleLocation> aisleLocations = aisleLocationService.getAisleLocations(storeId, aisleId1)

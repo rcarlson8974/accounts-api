@@ -12,8 +12,6 @@ class AccountControllerSpec extends BaseSpecification {
 
   def 'gets account'() {
 
-    setup:
-    String accountId = "100"
     when:
     def response = accountController.getAccount(accountId)
 
