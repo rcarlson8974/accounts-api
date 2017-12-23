@@ -16,7 +16,6 @@ class AccountHollowHealthCheck implements HealthIndicator {
 
   @Override
   Health health() {
-    hollowProducer.init()
     return hollowProducer.isReady() && hollowConsumer.isReady() ? Health.up().build() : Health.down().build()
   }
 

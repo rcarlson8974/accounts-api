@@ -112,8 +112,6 @@ class AccountProducer extends HollowHealthCheck {
       File publishDir = new File(AccountHollowConfig.SCRATCH_DIR, "publish-dir")
       publishDir.mkdir()
       announcementWatcher = new HollowFilesystemAnnouncementWatcher(publishDir)
-    } else {
-//      announcementWatcher = new GCSAnnouncementWatcher(hollowConfig)
     }
     return announcementWatcher
   }

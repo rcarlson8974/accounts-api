@@ -38,7 +38,6 @@ class AccountHollowConfig {
   public static final String SCRATCH_DIR = System.getProperty("java.io.tmpdir")
 
   @Bean
-//  HollowProducer.Publisher getLocalPublisher() {
   HollowProducer.Publisher getPublisher() {
     File publishDir = new File(SCRATCH_DIR, "publish-dir")
     publishDir.mkdir()

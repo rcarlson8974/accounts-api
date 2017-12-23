@@ -27,7 +27,6 @@ class AccountConsumer extends HollowHealthCheck {
   void init() {
     consumer = HollowConsumer.withBlobRetriever(blobRetriever)
         .withAnnouncementWatcher(announcementWatcher)
-//        .withRefreshListener(new AccountHollowRefreshListener())
         .withGeneratedAPIClass(AccountAPI.class)
         .build()
 
