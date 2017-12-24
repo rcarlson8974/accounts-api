@@ -57,8 +57,6 @@ class AccountProducerConsumerFunctionalSpec extends BaseSpecification {
     foundAccounts.size() == 2
     def transformedAccounts = AccountTransformer.transformFromHollowToDomains(foundAccounts as List<com.os.accounts.domain.generated.Account>)
     transformedAccounts.containsAll([account1, account2])
-//    foundAccounts.contains(account1)
-//    foundAccounts.contains(account2)
 
     cleanup:
     publishDir.delete()
