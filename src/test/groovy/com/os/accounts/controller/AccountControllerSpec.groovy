@@ -10,7 +10,7 @@ class AccountControllerSpec extends BaseSpecification {
   AccountService accountService = Mock(AccountService)
   AccountController accountController = new AccountController(accountService: accountService)
 
-  def 'gets account'() {
+  def 'get account'() {
 
     when:
     def response = accountController.getAccount(accountId)
@@ -21,6 +21,19 @@ class AccountControllerSpec extends BaseSpecification {
     and:
     response.statusCode == HttpStatus.OK
     response.body == account1
+  }
+
+  def 'get account handles exception'() {
+
+    when:
+    def response = accountController.getAccount(accountId)
+
+    then:
+    1 * accountService.getAccount(accountId) >> {
+      throw new Exception("get account blew up")
+    }
+    response.statusCode == HttpStatus.INTERNAL_SERVER_ERROR
+    response.body == "error trying to get account ${accountId} -> get account blew up"
   }
 
   @Unroll

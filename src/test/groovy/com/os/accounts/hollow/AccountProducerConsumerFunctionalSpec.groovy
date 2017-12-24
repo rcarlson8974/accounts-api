@@ -47,7 +47,7 @@ class AccountProducerConsumerFunctionalSpec extends BaseSpecification {
     accounts.each { Account account ->
       producer.publishAccount(account)
     }
-    sleep(15000) // need to wait for the Announcement to happen and the Watcher to pick it up.....
+    sleep(1000) // need to wait for the Announcement to happen and the Watcher to pick it up.....
     consumer.init()
 
     when:

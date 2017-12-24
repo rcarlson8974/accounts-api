@@ -18,4 +18,10 @@ class BaseSpecification extends Specification {
 
   @Shared
   Account account2 = new Account(accountId: '2', accountDesc: 'accDesc2', userId: 'abc2', passwordHint: 'yyy###', pinIdHint: '5678', url: 'www.test.com')
+
+  @Shared
+  com.os.accounts.domain.generated.Account mockHollowAccount1 = Mock()
+
+  @Shared
+  com.os.accounts.domain.generated.Account mockHollowAccount2 = Mock()
 }
